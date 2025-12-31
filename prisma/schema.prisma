@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Tutors can register and manage students and assignments
+model Tutor {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String   // Will be hashed
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  students    Student[]
+  assignments Assignment[]
+}
+
+// Students are added by tutors via email
+model Student {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  tutorId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tutor       Tutor            @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  assignments Assignment[]
+  answers     StudentAnswer[]
+}
+
+// Subjects: Mathematics, Polish, English
+model Subject {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  categories Category[]
+  questions  Question[]
+}
+
+// Categories within each subject (e.g., Math has 13 categories)
+model Category {
+  id        String @id @default(cuid())
+  name      String
+  slug      String
+  order     Int    // For ordering categories
+  subjectId String
+
+  subject   Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  questions Question[]
+
+  @@unique([subjectId, slug])
+}
+
+// Questions (currently closed-ended only)
+model Question {
+  id         String   @id @default(cuid())
+  text       String   // Question text with LaTeX support
+  subjectId  String
+  categoryId String
+  tutorId    String?  // Optional: track who created the question
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  subject          Subject            @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  category         Category           @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  answerOptions    AnswerOption[]
+  assignmentItems  AssignmentItem[]
+  studentAnswers   StudentAnswer[]
+}
+
+// Answer options for closed-ended questions
+model AnswerOption {
+  id         String  @id @default(cuid())
+  questionId String
+  text       String  // Answer text with LaTeX support
+  isCorrect  Boolean @default(false)
+  order      Int     // For ordering answer options
+
+  question       Question        @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  studentAnswers StudentAnswer[]
+}
+
+// Assignment: A set of questions assigned to a student by a tutor
+model Assignment {
+  id        String   @id @default(cuid())
+  title     String
+  tutorId   String
+  studentId String
+  dueDate   DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tutor Tutor   @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  items   AssignmentItem[]
+}
+
+// Questions included in an assignment
+model AssignmentItem {
+  id           String @id @default(cuid())
+  assignmentId String
+  questionId   String
+  order        Int    // Order of question in assignment
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([assignmentId, questionId])
+}
+
+// Student answers to track progress and errors
+model StudentAnswer {
+  id             String   @id @default(cuid())
+  studentId      String
+  questionId     String
+  answerOptionId String?  // Selected answer (null if not answered yet)
+  isCorrect      Boolean? // Null if not answered, true/false if answered
+  attemptedAt    DateTime @default(now())
+
+  student      Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  question     Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answerOption AnswerOption? @relation(fields: [answerOptionId], references: [id], onDelete: SetNull)
+
+  @@unique([studentId, questionId])
+}
