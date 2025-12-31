@@ -1,9 +1,5 @@
 import NextAuth, { DefaultSession } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import { compare } from "bcryptjs"
-import { PrismaClient } from "@/generated/prisma"
-
-const prisma = new PrismaClient()
 
 // Extend NextAuth types for custom session data
 declare module "next-auth" {
@@ -29,27 +25,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null
         }
 
-        const tutor = await prisma.tutor.findUnique({
-          where: { email: credentials.email as string }
-        })
+        // Import Prisma and bcrypt only when needed (not at module level)
+        const { PrismaClient } = await import("@/generated/prisma")
+        const { compare } = await import("bcryptjs")
 
-        if (!tutor) {
-          return null
-        }
+        const prisma = new PrismaClient()
 
-        const isPasswordValid = await compare(
-          credentials.password as string,
-          tutor.password
-        )
+        try {
+          const tutor = await prisma.tutor.findUnique({
+            where: { email: credentials.email as string }
+          })
 
-        if (!isPasswordValid) {
-          return null
-        }
+          if (!tutor) {
+            return null
+          }
 
-        return {
-          id: tutor.id,
-          email: tutor.email,
-          name: tutor.name,
+          const isPasswordValid = await compare(
+            credentials.password as string,
+            tutor.password
+          )
+
+          if (!isPasswordValid) {
+            return null
+          }
+
+          return {
+            id: tutor.id,
+            email: tutor.email,
+            name: tutor.name,
+          }
+        } finally {
+          await prisma.$disconnect()
         }
       }
     })
