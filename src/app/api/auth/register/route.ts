@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { hash } from "bcryptjs"
-import { PrismaClient } from "@/generated/prisma"
+import { PrismaClient, Role } from "@/generated/prisma"
 import { z } from "zod"
 
 const prisma = new PrismaClient()
@@ -9,6 +9,7 @@ const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
+  role: z.enum(["STUDENT", "TUTOR"]),
 })
 
 export async function POST(req: Request) {
@@ -24,14 +25,14 @@ export async function POST(req: Request) {
       )
     }
 
-    const { name, email, password } = validationResult.data
+    const { name, email, password, role } = validationResult.data
 
-    // Check if tutor already exists
-    const existingTutor = await prisma.tutor.findUnique({
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
       where: { email }
     })
 
-    if (existingTutor) {
+    if (existingUser) {
       return NextResponse.json(
         { error: "Email already registered" },
         { status: 409 }
@@ -41,25 +42,48 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await hash(password, 10)
 
-    // Create tutor
-    const tutor = await prisma.tutor.create({
+    // Create user with appropriate profile
+    const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
+        role: role as Role,
+        // Create profile based on role
+        ...(role === "TUTOR" && {
+          tutorProfile: {
+            create: {}
+          }
+        }),
+        ...(role === "STUDENT" && {
+          studentProfile: {
+            create: {}
+          }
+        }),
       },
       select: {
         id: true,
         email: true,
         name: true,
+        role: true,
         createdAt: true,
+        tutorProfile: {
+          select: {
+            id: true,
+          }
+        },
+        studentProfile: {
+          select: {
+            id: true,
+          }
+        },
       }
     })
 
     return NextResponse.json(
       {
         message: "Account created successfully",
-        tutor
+        user
       },
       { status: 201 }
     )

@@ -7,6 +7,7 @@ import { signIn } from "next-auth/react"
 export function RegisterForm() {
   const router = useRouter()
   const [name, setName] = useState("")
+  const [role, setRole] = useState<"STUDENT" | "TUTOR">("STUDENT")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
@@ -34,7 +35,7 @@ export function RegisterForm() {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, role }),
       })
 
       const data = await response.json()
@@ -82,6 +83,43 @@ export function RegisterForm() {
             placeholder="John Doe"
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3">
+            I am a...
+          </label>
+          <div className="flex gap-4">
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="radio"
+                name="role"
+                value="STUDENT"
+                checked={role === "STUDENT"}
+                onChange={(e) => setRole(e.target.value as "STUDENT" | "TUTOR")}
+                className="mr-2 h-4 w-4 border-zinc-300 text-zinc-900 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+              />
+              <span className="text-sm text-zinc-900 dark:text-zinc-100">
+                Student
+                <span className="block text-xs text-zinc-500 dark:text-zinc-400">Looking for help with my studies</span>
+              </span>
+            </label>
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="radio"
+                name="role"
+                value="TUTOR"
+                checked={role === "TUTOR"}
+                onChange={(e) => setRole(e.target.value as "STUDENT" | "TUTOR")}
+                className="mr-2 h-4 w-4 border-zinc-300 text-zinc-900 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+              />
+              <span className="text-sm text-zinc-900 dark:text-zinc-100">
+                Tutor
+                <span className="block text-xs text-zinc-500 dark:text-zinc-400">I help students learn</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
             Email address
