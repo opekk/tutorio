@@ -1,16 +1,5 @@
-import NextAuth, { DefaultSession } from "next-auth"
+import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-
-// Extend NextAuth types for custom session data
-declare module "next-auth" {
-  interface Session {
-    user: {
-      id: string
-      email: string
-      name: string
-    } & DefaultSession["user"]
-  }
-}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -32,17 +21,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const prisma = new PrismaClient()
 
         try {
-          const tutor = await prisma.tutor.findUnique({
+          const user = await prisma.user.findUnique({
             where: { email: credentials.email as string }
           })
 
-          if (!tutor) {
+          if (!user) {
             return null
           }
 
           const isPasswordValid = await compare(
             credentials.password as string,
-            tutor.password
+            user.password
           )
 
           if (!isPasswordValid) {
@@ -50,9 +39,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           }
 
           return {
-            id: tutor.id,
-            email: tutor.email,
-            name: tutor.name,
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
           }
         } finally {
           await prisma.$disconnect()
@@ -70,6 +60,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id
         token.email = user.email
         token.name = user.name
+        token.role = user.role
       }
       return token
     },
@@ -78,6 +69,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id as string
         session.user.email = token.email as string
         session.user.name = token.name as string
+        session.user.role = token.role
       }
       return session
     }
