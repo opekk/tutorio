@@ -11,31 +11,71 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Tutors can register and manage students and assignments
-model Tutor {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String   // Will be hashed
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  students    Student[]
-  assignments Assignment[]
+// Role-based user system
+enum Role {
+  STUDENT
+  TUTOR
+  ADMIN
 }
 
-// Students are added by tutors via email
-model Student {
+// Minimal User model - authentication only
+model User {
   id        String   @id @default(cuid())
   email     String   @unique
   name      String
-  tutorId   String
+  password  String   // Hashed with bcrypt
+  role      Role
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tutor       Tutor            @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  assignments Assignment[]
-  answers     StudentAnswer[]
+  // One-to-one profiles based on role
+  tutorProfile   TutorProfile?
+  studentProfile StudentProfile?
+}
+
+// Tutor-specific profile and relations
+model TutorProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Only tutors have these relations
+  students           TutorStudent[]  @relation("TutorStudents")
+  assignmentsCreated Assignment[]
+  questionsCreated   Question[]
+}
+
+// Student-specific profile and relations
+model StudentProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Only students have these relations
+  tutors              TutorStudent[]    @relation("StudentTutors")
+  assignmentsAssigned Assignment[]
+  answers             StudentAnswer[]
+}
+
+// Join table for many-to-many tutor-student relationship
+model TutorStudent {
+  id              String   @id @default(cuid())
+  tutorProfileId  String
+  studentProfileId String
+  createdAt       DateTime @default(now())
+
+  tutorProfile   TutorProfile   @relation("TutorStudents", fields: [tutorProfileId], references: [id], onDelete: Cascade)
+  studentProfile StudentProfile @relation("StudentTutors", fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([tutorProfileId, studentProfileId])
+  @@index([tutorProfileId])
+  @@index([studentProfileId])
 }
 
 // Subjects: Mathematics, Polish, English
@@ -64,19 +104,20 @@ model Category {
 
 // Questions (currently closed-ended only)
 model Question {
-  id         String   @id @default(cuid())
-  text       String   // Question text with LaTeX support
-  subjectId  String
-  categoryId String
-  tutorId    String?  // Optional: track who created the question
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                String   @id @default(cuid())
+  text              String   // Question text with LaTeX support
+  subjectId         String
+  categoryId        String
+  createdByProfileId String?  // Optional: track which tutor created the question
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 
-  subject          Subject            @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-  category         Category           @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  answerOptions    AnswerOption[]
-  assignmentItems  AssignmentItem[]
-  studentAnswers   StudentAnswer[]
+  subject         Subject            @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  category        Category           @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdBy       TutorProfile?      @relation(fields: [createdByProfileId], references: [id], onDelete: SetNull)
+  answerOptions   AnswerOption[]
+  assignmentItems AssignmentItem[]
+  studentAnswers  StudentAnswer[]
 }
 
 // Answer options for closed-ended questions
@@ -93,17 +134,17 @@ model AnswerOption {
 
 // Assignment: A set of questions assigned to a student by a tutor
 model Assignment {
-  id        String   @id @default(cuid())
-  title     String
-  tutorId   String
-  studentId String
-  dueDate   DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String    @id @default(cuid())
+  title              String
+  creatorProfileId   String    // Tutor profile who created the assignment
+  assignedToProfileId String   // Student profile assigned to the assignment
+  dueDate            DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 
-  tutor Tutor   @relation(fields: [tutorId], references: [id], onDelete: Cascade)
-  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  items   AssignmentItem[]
+  creator    TutorProfile     @relation(fields: [creatorProfileId], references: [id], onDelete: Cascade)
+  assignedTo StudentProfile   @relation(fields: [assignedToProfileId], references: [id], onDelete: Cascade)
+  items      AssignmentItem[]
 }
 
 // Questions included in an assignment
@@ -121,16 +162,16 @@ model AssignmentItem {
 
 // Student answers to track progress and errors
 model StudentAnswer {
-  id             String   @id @default(cuid())
-  studentId      String
-  questionId     String
-  answerOptionId String?  // Selected answer (null if not answered yet)
-  isCorrect      Boolean? // Null if not answered, true/false if answered
-  attemptedAt    DateTime @default(now())
+  id               String   @id @default(cuid())
+  studentProfileId String   // References StudentProfile
+  questionId       String
+  answerOptionId   String?  // Selected answer (null if not answered yet)
+  isCorrect        Boolean? // Null if not answered, true/false if answered
+  attemptedAt      DateTime @default(now())
 
-  student      Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  question     Question      @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  answerOption AnswerOption? @relation(fields: [answerOptionId], references: [id], onDelete: SetNull)
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  question       Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answerOption   AnswerOption?  @relation(fields: [answerOptionId], references: [id], onDelete: SetNull)
 
-  @@unique([studentId, questionId])
+  @@unique([studentProfileId, questionId])
 }
