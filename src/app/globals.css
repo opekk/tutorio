@@ -1,61 +1,61 @@
 @import "tailwindcss";
 
 /* ========================================
-   BRIGHT LEARNING COLOR PALETTE
-   Inspired by Duolingo's engaging approach
+   SOFT PASTEL COLOR PALETTE
+   Light, calming colors for focused learning
    ======================================== */
 
 :root {
   /* Base Colors */
-  --background: #ffffff;
-  --foreground: #2d3748;
+  --background: #fafbfc;
+  --foreground: #4a5568;
 
-  /* Primary Colors (60% usage) */
-  --primary: #1cb0f6;
-  --primary-hover: #1a9dd9;
-  --primary-active: #1789bd;
+  /* Primary Colors (60% usage) - Soft Blue */
+  --primary: #93c5fd;
+  --primary-hover: #7ab8fc;
+  --primary-active: #60a5fa;
 
-  /* Secondary Colors (30% usage) */
-  --secondary: #58cc02;
-  --secondary-hover: #4fb802;
-  --secondary-active: #46a302;
+  /* Secondary Colors (30% usage) - Soft Green */
+  --secondary: #86efac;
+  --secondary-hover: #6ee7a7;
+  --secondary-active: #4ade80;
 
-  /* Accent Colors (10% usage) */
-  --accent: #ffc800;
-  --accent-hover: #e6b400;
-  --accent-active: #cca000;
+  /* Accent Colors (10% usage) - Soft Peach */
+  --accent: #fbbf24;
+  --accent-hover: #f59e0b;
+  --accent-active: #d97706;
 
-  /* Subject Colors */
-  --subject-math: #1cb0f6;
-  --subject-polish: #ce82ff;
-  --subject-english: #ff9600;
+  /* Subject Colors - Pastels */
+  --subject-math: #93c5fd;
+  --subject-polish: #d8b4fe;
+  --subject-english: #fbbf24;
 
   /* Neutral Colors (backgrounds, borders, text) */
   --surface: #ffffff;
-  --surface-secondary: #f7fafc;
-  --surface-tertiary: #edf2f7;
+  --surface-secondary: #f8fafc;
+  --surface-tertiary: #f1f5f9;
 
-  --text-primary: #2d3748;
-  --text-secondary: #718096;
-  --text-tertiary: #a0aec0;
+  --text-primary: #334155;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
 
   --border: #e2e8f0;
   --border-hover: #cbd5e0;
 
   /* Semantic Colors */
-  --success: #58cc02;
+  --success: #86efac;
   --success-bg: #f0fdf4;
   --success-border: #bbf7d0;
 
-  --warning: #ffc800;
+  --warning: #fcd34d;
   --warning-bg: #fffbeb;
   --warning-border: #fde68a;
 
-  --error: #ff4b4b;
+  --error: #fca5a5;
   --error-bg: #fef2f2;
   --error-border: #fecaca;
 
-  --info: #1cb0f6;
+  --info: #93c5fd;
   --info-bg: #eff6ff;
   --info-border: #bfdbfe;
 }
@@ -125,21 +125,21 @@
 
 /* Subject Badge Utilities */
 .badge-math {
-  background-color: rgba(28, 176, 246, 0.1);
-  color: var(--subject-math);
-  border: 1px solid rgba(28, 176, 246, 0.3);
+  background-color: rgba(147, 197, 253, 0.2);
+  color: #3b82f6;
+  border: 1px solid rgba(147, 197, 253, 0.5);
 }
 
 .badge-polish {
-  background-color: rgba(206, 130, 255, 0.1);
-  color: var(--subject-polish);
-  border: 1px solid rgba(206, 130, 255, 0.3);
+  background-color: rgba(216, 180, 254, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(216, 180, 254, 0.5);
 }
 
 .badge-english {
-  background-color: rgba(255, 150, 0, 0.1);
-  color: var(--subject-english);
-  border: 1px solid rgba(255, 150, 0, 0.3);
+  background-color: rgba(251, 191, 36, 0.2);
+  color: #f59e0b;
+  border: 1px solid rgba(251, 191, 36, 0.5);
 }
 
 /* Interactive Card Hover States */
@@ -149,8 +149,8 @@
 
 .card-interactive:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(28, 176, 246, 0.1),
-              0 4px 6px -2px rgba(28, 176, 246, 0.05);
+  box-shadow: 0 10px 15px -3px rgba(147, 197, 253, 0.15),
+              0 4px 6px -2px rgba(147, 197, 253, 0.08);
 }
 
 body {
