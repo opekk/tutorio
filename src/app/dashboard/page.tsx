@@ -1,5 +1,6 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import Link from "next/link"
 import { SignOutButton } from "@/components/auth/SignOutButton"
 
 export default async function DashboardPage() {
@@ -13,20 +14,20 @@ export default async function DashboardPage() {
   const isStudent = session.user.role === "STUDENT"
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="min-h-screen bg-background">
+      <header className="border-b border-border bg-surface">
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              <h1 className="text-2xl font-bold text-text-primary">
                 Dashboard
               </h1>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              <p className="text-sm text-text-secondary">
                 {isTutor ? "Tutor" : "Student"} Account
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-zinc-600 dark:text-zinc-400">
+              <span className="text-sm text-text-secondary">
                 {session.user.email}
               </span>
               <SignOutButton />
@@ -36,48 +37,82 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="rounded-lg bg-white p-6 shadow dark:bg-zinc-900">
-          <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+        <div className="rounded-lg bg-surface p-6 shadow">
+          <h2 className="text-xl font-semibold text-text-primary">
             Welcome, {session.user.name}!
           </h2>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 text-text-secondary">
             You are signed in as a {isTutor ? "tutor" : "student"}.
           </p>
 
           {isTutor && (
             <div className="mt-6 space-y-4">
-              <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
-                Tutor Features
+              <h3 className="text-lg font-medium text-text-primary">
+                Quick Actions
               </h3>
-              <ul className="list-inside list-disc space-y-2 text-zinc-600 dark:text-zinc-400">
-                <li>Manage your students</li>
-                <li>Create and assign questions</li>
-                <li>Track student progress</li>
-                <li>Add students by email</li>
-              </ul>
-              <div className="pt-4">
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 italic">
-                  Features coming soon: Student management, question creation, and assignment tracking.
-                </p>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <Link
+                  href="/dashboard/students"
+                  className="card-interactive rounded-lg border border-border p-4 hover:bg-surface-secondary transition-colors"
+                >
+                  <h4 className="font-medium text-text-primary">
+                    👥 Students
+                  </h4>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Manage your students
+                  </p>
+                </Link>
+                <Link
+                  href="/dashboard/questions"
+                  className="card-interactive rounded-lg border border-border p-4 hover:bg-surface-secondary transition-colors"
+                >
+                  <h4 className="font-medium text-text-primary">
+                    📝 Questions
+                  </h4>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Create practice questions
+                  </p>
+                </Link>
+                <Link
+                  href="/dashboard/assignments"
+                  className="card-interactive rounded-lg border border-border p-4 hover:bg-surface-secondary transition-colors"
+                >
+                  <h4 className="font-medium text-text-primary">
+                    📋 Assignments
+                  </h4>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Assign questions to students
+                  </p>
+                </Link>
               </div>
             </div>
           )}
 
           {isStudent && (
             <div className="mt-6 space-y-4">
-              <h3 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">
-                Student Features
+              <h3 className="text-lg font-medium text-text-primary">
+                Quick Actions
               </h3>
-              <ul className="list-inside list-disc space-y-2 text-zinc-600 dark:text-zinc-400">
-                <li>View your assignments</li>
-                <li>Complete practice questions</li>
-                <li>Track your progress</li>
-                <li>See your tutors</li>
-              </ul>
-              <div className="pt-4">
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 italic">
-                  Features coming soon: Assignment viewing, question practice, and progress tracking.
-                </p>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Link
+                  href="/dashboard/student/assignments"
+                  className="card-interactive rounded-lg border border-border p-4 hover:bg-surface-secondary transition-colors"
+                >
+                  <h4 className="font-medium text-text-primary">
+                    📋 My Assignments
+                  </h4>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    View and complete practice questions
+                  </p>
+                </Link>
+                <div className="rounded-lg border border-border p-4 opacity-50">
+                  <h4 className="font-medium text-text-primary">
+                    👥 My Tutors
+                  </h4>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Coming soon
+                  </p>
+                </div>
               </div>
             </div>
           )}
