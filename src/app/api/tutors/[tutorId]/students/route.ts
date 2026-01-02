@@ -12,13 +12,14 @@ const addStudentSchema = z.object({
 // GET /api/tutors/[tutorId]/students - Get all students for a tutor
 export async function GET(
   req: Request,
-  { params }: { params: { tutorId: string } }
+  { params }: { params: Promise<{ tutorId: string }> }
 ) {
   try {
     const user = await requireRole("TUTOR")
+    const { tutorId } = await params
 
     // Ensure tutors can only access their own students
-    if (user.id !== params.tutorId) {
+    if (user.id !== tutorId) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 403 }
@@ -27,7 +28,7 @@ export async function GET(
 
     // Get tutor profile
     const tutorProfile = await prisma.tutorProfile.findUnique({
-      where: { userId: params.tutorId }
+      where: { userId: tutorId }
     })
 
     if (!tutorProfile) {
@@ -74,13 +75,14 @@ export async function GET(
 // POST /api/tutors/[tutorId]/students - Add a student to tutor by email
 export async function POST(
   req: Request,
-  { params }: { params: { tutorId: string } }
+  { params }: { params: Promise<{ tutorId: string }> }
 ) {
   try {
     const user = await requireRole("TUTOR")
+    const { tutorId } = await params
 
     // Ensure tutors can only add students to themselves
-    if (user.id !== params.tutorId) {
+    if (user.id !== tutorId) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 403 }
@@ -102,7 +104,7 @@ export async function POST(
 
     // Get tutor profile
     const tutorProfile = await prisma.tutorProfile.findUnique({
-      where: { userId: params.tutorId }
+      where: { userId: tutorId }
     })
 
     if (!tutorProfile) {

@@ -7,13 +7,14 @@ const prisma = new PrismaClient()
 // DELETE /api/tutors/[tutorId]/students/[studentId] - Remove student from tutor
 export async function DELETE(
   req: Request,
-  { params }: { params: { tutorId: string; studentId: string } }
+  { params }: { params: Promise<{ tutorId: string; studentId: string }> }
 ) {
   try {
     const user = await requireRole("TUTOR")
+    const { tutorId, studentId } = await params
 
     // Ensure tutors can only remove students from themselves
-    if (user.id !== params.tutorId) {
+    if (user.id !== tutorId) {
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 403 }
@@ -22,7 +23,7 @@ export async function DELETE(
 
     // Get tutor profile
     const tutorProfile = await prisma.tutorProfile.findUnique({
-      where: { userId: params.tutorId }
+      where: { userId: tutorId }
     })
 
     if (!tutorProfile) {
@@ -34,7 +35,7 @@ export async function DELETE(
 
     // Get student profile
     const studentProfile = await prisma.studentProfile.findUnique({
-      where: { userId: params.studentId }
+      where: { userId: studentId }
     })
 
     if (!studentProfile) {
@@ -58,6 +59,22 @@ export async function DELETE(
       return NextResponse.json(
         { error: "Student relationship not found" },
         { status: 404 }
+      )
+    }
+
+    // Check if student has any assignments
+    const assignmentCount = await prisma.assignment.count({
+      where: {
+        assignedToProfileId: studentProfile.id,
+      },
+    })
+
+    if (assignmentCount > 0) {
+      return NextResponse.json(
+        {
+          error: `Cannot remove student with active assignments. Delete their ${assignmentCount} assignment${assignmentCount !== 1 ? "s" : ""} first.`,
+        },
+        { status: 409 }
       )
     }
 

@@ -7,19 +7,20 @@ const prisma = new PrismaClient()
 // GET /api/students/[studentId]/tutors - Get all tutors for a student
 export async function GET(
   req: Request,
-  { params }: { params: { studentId: string } }
+  { params }: { params: Promise<{ studentId: string }> }
 ) {
   try {
     const user = await requireAuth()
+    const { studentId } = await params
 
     // Students can only view their own tutors
     // Tutors can view tutors of their students
-    const isOwnData = user.id === params.studentId
+    const isOwnData = user.id === studentId
     const isTutorCheckingStudent = user.role === "TUTOR"
 
     // Get student profile
     const studentProfile = await prisma.studentProfile.findUnique({
-      where: { userId: params.studentId }
+      where: { userId: studentId }
     })
 
     if (!studentProfile) {
