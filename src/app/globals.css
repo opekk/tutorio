@@ -1,22 +1,156 @@
 @import "tailwindcss";
 
+/* ========================================
+   BRIGHT LEARNING COLOR PALETTE
+   Inspired by Duolingo's engaging approach
+   ======================================== */
+
 :root {
+  /* Base Colors */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #2d3748;
+
+  /* Primary Colors (60% usage) */
+  --primary: #1cb0f6;
+  --primary-hover: #1a9dd9;
+  --primary-active: #1789bd;
+
+  /* Secondary Colors (30% usage) */
+  --secondary: #58cc02;
+  --secondary-hover: #4fb802;
+  --secondary-active: #46a302;
+
+  /* Accent Colors (10% usage) */
+  --accent: #ffc800;
+  --accent-hover: #e6b400;
+  --accent-active: #cca000;
+
+  /* Subject Colors */
+  --subject-math: #1cb0f6;
+  --subject-polish: #ce82ff;
+  --subject-english: #ff9600;
+
+  /* Neutral Colors (backgrounds, borders, text) */
+  --surface: #ffffff;
+  --surface-secondary: #f7fafc;
+  --surface-tertiary: #edf2f7;
+
+  --text-primary: #2d3748;
+  --text-secondary: #718096;
+  --text-tertiary: #a0aec0;
+
+  --border: #e2e8f0;
+  --border-hover: #cbd5e0;
+
+  /* Semantic Colors */
+  --success: #58cc02;
+  --success-bg: #f0fdf4;
+  --success-border: #bbf7d0;
+
+  --warning: #ffc800;
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+
+  --error: #ff4b4b;
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+
+  --info: #1cb0f6;
+  --info-bg: #eff6ff;
+  --info-border: #bfdbfe;
 }
+
+
+/* ========================================
+   TAILWIND V4 THEME INTEGRATION
+   ======================================== */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Fonts (existing) */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Color Mappings for Tailwind Utilities */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-active: var(--secondary-active);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-surface-tertiary: var(--surface-tertiary);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+
+  --color-border: var(--border);
+  --color-border-hover: var(--border-hover);
+
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-border: var(--success-border);
+
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-border: var(--warning-border);
+
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+  --color-error-border: var(--error-border);
+
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-info-border: var(--info-border);
+
+  /* Subject Colors */
+  --color-math: var(--subject-math);
+  --color-polish: var(--subject-polish);
+  --color-english: var(--subject-english);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ========================================
+   CUSTOM UTILITY CLASSES
+   ======================================== */
+
+/* Subject Badge Utilities */
+.badge-math {
+  background-color: rgba(28, 176, 246, 0.1);
+  color: var(--subject-math);
+  border: 1px solid rgba(28, 176, 246, 0.3);
+}
+
+.badge-polish {
+  background-color: rgba(206, 130, 255, 0.1);
+  color: var(--subject-polish);
+  border: 1px solid rgba(206, 130, 255, 0.3);
+}
+
+.badge-english {
+  background-color: rgba(255, 150, 0, 0.1);
+  color: var(--subject-english);
+  border: 1px solid rgba(255, 150, 0, 0.3);
+}
+
+/* Interactive Card Hover States */
+.card-interactive {
+  transition: all 0.2s ease-in-out;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(28, 176, 246, 0.1),
+              0 4px 6px -2px rgba(28, 176, 246, 0.05);
 }
 
 body {

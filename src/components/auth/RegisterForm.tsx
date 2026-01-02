@@ -69,7 +69,7 @@ export function RegisterForm() {
     <form onSubmit={onSubmit} className="mt-8 space-y-6">
       <div className="space-y-4 rounded-md">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="name" className="block text-sm font-medium text-text-primary">
             Full name
           </label>
           <input
@@ -79,13 +79,13 @@ export function RegisterForm() {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder-zinc-500"
+            className="mt-1 block w-full rounded-md border border-border bg-surface px-3 py-2 text-text-primary placeholder-text-tertiary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
             placeholder="John Doe"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3">
+          <label className="block text-sm font-medium text-text-primary mb-3">
             I am a...
           </label>
           <div className="flex gap-4">
@@ -96,11 +96,11 @@ export function RegisterForm() {
                 value="STUDENT"
                 checked={role === "STUDENT"}
                 onChange={(e) => setRole(e.target.value as "STUDENT" | "TUTOR")}
-                className="mr-2 h-4 w-4 border-zinc-300 text-zinc-900 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+                className="mr-2 h-4 w-4 border-border text-primary focus:ring-primary"
               />
-              <span className="text-sm text-zinc-900 dark:text-zinc-100">
+              <span className="text-sm text-text-primary">
                 Student
-                <span className="block text-xs text-zinc-500 dark:text-zinc-400">Looking for help with my studies</span>
+                <span className="block text-xs text-text-secondary">Looking for help with my studies</span>
               </span>
             </label>
             <label className="flex items-center cursor-pointer">
@@ -110,18 +110,18 @@ export function RegisterForm() {
                 value="TUTOR"
                 checked={role === "TUTOR"}
                 onChange={(e) => setRole(e.target.value as "STUDENT" | "TUTOR")}
-                className="mr-2 h-4 w-4 border-zinc-300 text-zinc-900 focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800"
+                className="mr-2 h-4 w-4 border-border text-primary focus:ring-primary"
               />
-              <span className="text-sm text-zinc-900 dark:text-zinc-100">
+              <span className="text-sm text-text-primary">
                 Tutor
-                <span className="block text-xs text-zinc-500 dark:text-zinc-400">I help students learn</span>
+                <span className="block text-xs text-text-secondary">I help students learn</span>
               </span>
             </label>
           </div>
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="email" className="block text-sm font-medium text-text-primary">
             Email address
           </label>
           <input
@@ -132,12 +132,12 @@ export function RegisterForm() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder-zinc-500"
+            className="mt-1 block w-full rounded-md border border-border bg-surface px-3 py-2 text-text-primary placeholder-text-tertiary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
             placeholder="tutor@example.com"
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="password" className="block text-sm font-medium text-text-primary">
             Password
           </label>
           <input
@@ -148,12 +148,12 @@ export function RegisterForm() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder-zinc-500"
+            className="mt-1 block w-full rounded-md border border-border bg-surface px-3 py-2 text-text-primary placeholder-text-tertiary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
             placeholder="••••••••"
           />
         </div>
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-primary">
             Confirm password
           </label>
           <input
@@ -164,22 +164,22 @@ export function RegisterForm() {
             required
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="mt-1 block w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900 placeholder-zinc-400 focus:border-zinc-500 focus:outline-none focus:ring-zinc-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-50 dark:placeholder-zinc-500"
+            className="mt-1 block w-full rounded-md border border-border bg-surface px-3 py-2 text-text-primary placeholder-text-tertiary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
             placeholder="••••••••"
           />
         </div>
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-          <p className="text-sm text-red-800 dark:text-red-400">{error}</p>
+        <div className="rounded-md bg-error-bg border border-error-border p-3">
+          <p className="text-sm text-error">{error}</p>
         </div>
       )}
 
       <button
         type="submit"
         disabled={isLoading}
-        className="flex w-full justify-center rounded-md bg-zinc-900 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+        className="flex w-full justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {isLoading ? "Creating account..." : "Create account"}
       </button>
