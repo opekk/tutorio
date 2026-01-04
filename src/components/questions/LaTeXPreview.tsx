@@ -1,6 +1,7 @@
 "use client"
 
 import { InlineMath, BlockMath } from 'react-katex'
+import { useTranslations } from 'next-intl'
 import 'katex/dist/katex.min.css'
 
 interface LaTeXPreviewProps {
@@ -30,10 +31,13 @@ function shouldRenderLatex(subjectName?: string): boolean {
 }
 
 export function LaTeXPreview({ text, displayMode = false, subjectName }: LaTeXPreviewProps) {
+  const t = useTranslations('questions')
+  const tErrors = useTranslations('errors')
+
   if (!text) {
     return (
       <div className="text-zinc-400 dark:text-zinc-600 italic text-sm">
-        Preview will appear here...
+        {t('previewWillAppear')}
       </div>
     )
   }
@@ -114,7 +118,9 @@ export function LaTeXPreview({ text, displayMode = false, subjectName }: LaTeXPr
   } catch (error) {
     return (
       <div className="text-red-600 dark:text-red-400 text-sm">
-        Error rendering LaTeX: {error instanceof Error ? error.message : 'Unknown error'}
+        {tErrors('latexRenderError', {
+          message: error instanceof Error ? error.message : tErrors('unknownError')
+        })}
       </div>
     )
   }

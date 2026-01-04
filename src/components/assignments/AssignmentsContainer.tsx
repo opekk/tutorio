@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { AssignmentForm } from "./AssignmentForm"
 import { AssignmentList } from "./AssignmentList"
 
@@ -9,6 +10,8 @@ interface AssignmentsContainerProps {
 }
 
 export function AssignmentsContainer({ tutorId }: AssignmentsContainerProps) {
+  const t = useTranslations('assignments')
+  const tCommon = useTranslations('common')
   const [editingAssignmentId, setEditingAssignmentId] = useState<string | null>(null)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
 
@@ -38,14 +41,14 @@ export function AssignmentsContainer({ tutorId }: AssignmentsContainerProps) {
         <div className="rounded-lg border border-border bg-surface p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-text-primary">
-              {editingAssignmentId ? "Edit Assignment" : "Create Assignment"}
+              {editingAssignmentId ? t('editAssignment') : t('createAssignment')}
             </h2>
             {editingAssignmentId && (
               <button
                 onClick={handleCancelEdit}
                 className="text-sm text-text-secondary hover:text-text-primary transition-colors"
               >
-                Cancel Edit
+                {tCommon('cancel')} {t('edit')}
               </button>
             )}
           </div>
@@ -62,7 +65,7 @@ export function AssignmentsContainer({ tutorId }: AssignmentsContainerProps) {
       <div className="lg:col-span-2">
         <div className="rounded-lg border border-border bg-surface p-6 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold text-text-primary">
-            Your Assignments
+            {t('yourAssignments')}
           </h2>
           <AssignmentList
             key={refreshTrigger}

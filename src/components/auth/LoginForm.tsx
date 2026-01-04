@@ -3,9 +3,17 @@
 import { useState } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 
-export function LoginForm() {
+interface LoginFormProps {
+  locale: string
+}
+
+export function LoginForm({ locale }: LoginFormProps) {
   const router = useRouter()
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -24,13 +32,13 @@ export function LoginForm() {
       })
 
       if (result?.error) {
-        setError("Invalid email or password")
+        setError(t('invalidCredentials'))
       } else {
-        router.push("/dashboard")
+        router.push(`/${locale}/dashboard`)
         router.refresh()
       }
     } catch (error) {
-      setError("An error occurred. Please try again.")
+      setError(tErrors('networkError'))
     } finally {
       setIsLoading(false)
     }
@@ -41,7 +49,7 @@ export function LoginForm() {
       <div className="space-y-4 rounded-md">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-text-primary">
-            Email address
+            {t('email')}
           </label>
           <input
             id="email"
@@ -57,7 +65,7 @@ export function LoginForm() {
         </div>
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-text-primary">
-            Password
+            {t('password')}
           </label>
           <input
             id="password"
@@ -84,7 +92,7 @@ export function LoginForm() {
         disabled={isLoading}
         className="flex w-full justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {isLoading ? "Signing in..." : "Sign in"}
+        {isLoading ? tCommon('loading') : t('login')}
       </button>
     </form>
   )
