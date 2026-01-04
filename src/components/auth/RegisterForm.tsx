@@ -3,9 +3,17 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
+import { useTranslations } from "next-intl"
 
-export function RegisterForm() {
+interface RegisterFormProps {
+  locale: string
+}
+
+export function RegisterForm({ locale }: RegisterFormProps) {
   const router = useRouter()
+  const t = useTranslations('auth')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
   const [name, setName] = useState("")
   const [role, setRole] = useState<"STUDENT" | "TUTOR">("STUDENT")
   const [email, setEmail] = useState("")
@@ -20,12 +28,12 @@ export function RegisterForm() {
 
     // Client-side validation
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
+      setError(t('passwordMismatch'))
       return
     }
 
     if (password.length < 8) {
-      setError("Password must be at least 8 characters")
+      setError(t('passwordTooShort'))
       return
     }
 
@@ -41,7 +49,7 @@ export function RegisterForm() {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || "Something went wrong")
+        setError(data.error || tErrors('somethingWentWrong'))
         return
       }
 
@@ -53,13 +61,13 @@ export function RegisterForm() {
       })
 
       if (result?.error) {
-        setError("Account created, but sign-in failed. Please try logging in.")
+        setError(t('invalidCredentials'))
       } else {
-        router.push("/dashboard")
+        router.push(`/${locale}/dashboard`)
         router.refresh()
       }
     } catch (error) {
-      setError("An error occurred. Please try again.")
+      setError(tErrors('networkError'))
     } finally {
       setIsLoading(false)
     }
@@ -70,7 +78,7 @@ export function RegisterForm() {
       <div className="space-y-4 rounded-md">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-text-primary">
-            Full name
+            {t('name')}
           </label>
           <input
             id="name"
@@ -86,7 +94,7 @@ export function RegisterForm() {
 
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-text-primary">
-            Email address
+            {t('email')}
           </label>
           <input
             id="email"
@@ -102,7 +110,7 @@ export function RegisterForm() {
         </div>
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-text-primary">
-            Password
+            {t('password')}
           </label>
           <input
             id="password"
@@ -118,7 +126,7 @@ export function RegisterForm() {
         </div>
         <div>
           <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-primary">
-            Confirm password
+            {t('confirmPassword')}
           </label>
           <input
             id="confirmPassword"
@@ -135,7 +143,7 @@ export function RegisterForm() {
 
         <div>
           <label className="block text-sm font-medium text-text-primary mb-2">
-            I am a...
+            {t('chooseRole')}
           </label>
           <div className="grid grid-cols-2 gap-3">
             <button
@@ -147,8 +155,8 @@ export function RegisterForm() {
                   : "border-border bg-surface hover:bg-surface-secondary"
               }`}
             >
-              <div className="text-sm font-medium text-text-primary">Student</div>
-              <div className="text-xs text-text-secondary mt-0.5">Get help learning</div>
+              <div className="text-sm font-medium text-text-primary">{t('student')}</div>
+              <div className="text-xs text-text-secondary mt-0.5">{t('studentDescription')}</div>
             </button>
             <button
               type="button"
@@ -159,8 +167,8 @@ export function RegisterForm() {
                   : "border-border bg-surface hover:bg-surface-secondary"
               }`}
             >
-              <div className="text-sm font-medium text-text-primary">Tutor</div>
-              <div className="text-xs text-text-secondary mt-0.5">Help students</div>
+              <div className="text-sm font-medium text-text-primary">{t('tutor')}</div>
+              <div className="text-xs text-text-secondary mt-0.5">{t('tutorDescription')}</div>
             </button>
           </div>
         </div>
@@ -177,7 +185,7 @@ export function RegisterForm() {
         disabled={isLoading}
         className="flex w-full justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {isLoading ? "Creating account..." : "Create account"}
+        {isLoading ? tCommon('loading') : t('createAccount')}
       </button>
     </form>
   )

@@ -1,13 +1,23 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
 import Link from 'next/link';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
-export default async function Home() {
+export default async function Home({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   const user = await getCurrentUser();
+  const t = await getTranslations({ locale, namespace: 'home' });
 
   // Redirect authenticated users to dashboard
   if (user) {
-    redirect('/dashboard');
+    redirect(`/${locale}/dashboard`);
   }
 
   return (
@@ -25,17 +35,18 @@ export default async function Home() {
               </span>
             </div>
             <div className="flex items-center gap-4">
+              <LanguageSwitcher />
               <Link
-                href="/login"
+                href={`/${locale}/login`}
                 className="text-sm font-medium text-text-secondary hover:text-primary transition-colors"
               >
-                Sign in
+                {t('signIn')}
               </Link>
               <Link
-                href="/register"
+                href={`/${locale}/register`}
                 className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover transition-colors"
               >
-                Get Started
+                {t('getStarted')}
               </Link>
             </div>
           </div>
@@ -46,27 +57,26 @@ export default async function Home() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20">
         <div className="text-center">
           <h1 className="text-5xl font-extrabold tracking-tight text-text-primary sm:text-6xl lg:text-7xl">
-            <span className="block">Tutoring Made</span>
+            <span className="block">{t('heroTitle1')}</span>
             <span className="block text-primary">
-              Simple & Effective
+              {t('heroTitle2')}
             </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-text-secondary sm:text-xl">
-            Create assignments, track progress, and help your students succeed.
-            All your tutoring tools in one beautiful platform.
+            {t('heroDescription')}
           </p>
           <div className="mt-10 flex items-center justify-center gap-4">
             <Link
-              href="/register"
+              href={`/${locale}/register`}
               className="rounded-lg bg-primary px-8 py-4 text-base font-semibold text-white hover:bg-primary-hover transition-colors shadow-md"
             >
-              Start Free Trial
+              {t('startFreeTrial')}
             </Link>
             <Link
-              href="/login"
+              href={`/${locale}/login`}
               className="rounded-lg border-2 border-border bg-surface px-8 py-4 text-base font-semibold text-primary hover:bg-surface-secondary transition-colors"
             >
-              Sign In
+              {t('signIn')}
             </Link>
           </div>
         </div>
@@ -81,10 +91,10 @@ export default async function Home() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-text-primary mb-2">
-              Question Bank
+              {t('feature1Title')}
             </h3>
             <p className="text-text-secondary">
-              Create and organize questions with LaTeX support for mathematics, Polish, and English.
+              {t('feature1Description')}
             </p>
           </div>
 
@@ -96,10 +106,10 @@ export default async function Home() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-text-primary mb-2">
-              Smart Assignments
+              {t('feature2Title')}
             </h3>
             <p className="text-text-secondary">
-              Build custom assignments from your question bank with drag-and-drop ordering.
+              {t('feature2Description')}
             </p>
           </div>
 
@@ -111,10 +121,10 @@ export default async function Home() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-text-primary mb-2">
-              Progress Tracking
+              {t('feature3Title')}
             </h3>
             <p className="text-text-secondary">
-              Monitor student performance and identify areas that need attention.
+              {t('feature3Description')}
             </p>
           </div>
 
@@ -126,10 +136,10 @@ export default async function Home() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-text-primary mb-2">
-              Student Management
+              {t('feature4Title')}
             </h3>
             <p className="text-text-secondary">
-              Easily manage your students and send them personalized assignments.
+              {t('feature4Description')}
             </p>
           </div>
 
@@ -141,10 +151,10 @@ export default async function Home() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-text-primary mb-2">
-              LaTeX Support
+              {t('feature5Title')}
             </h3>
             <p className="text-text-secondary">
-              Write beautiful mathematical formulas with full LaTeX rendering support.
+              {t('feature5Description')}
             </p>
           </div>
 
@@ -156,10 +166,10 @@ export default async function Home() {
               </svg>
             </div>
             <h3 className="text-xl font-semibold text-text-primary mb-2">
-              Instant Feedback
+              {t('feature6Title')}
             </h3>
             <p className="text-text-secondary">
-              Students get immediate results on their answers and can learn from mistakes.
+              {t('feature6Description')}
             </p>
           </div>
         </div>
@@ -168,17 +178,17 @@ export default async function Home() {
         <div className="mt-32 text-center">
           <div className="rounded-3xl border border-border bg-surface-tertiary p-12 shadow-lg">
             <h2 className="text-3xl font-bold text-text-primary sm:text-4xl">
-              Ready to transform your tutoring?
+              {t('ctaTitle')}
             </h2>
             <p className="mt-4 text-lg text-text-secondary">
-              Join Tutorio today and make teaching easier and more effective.
+              {t('ctaDescription')}
             </p>
             <div className="mt-8">
               <Link
-                href="/register"
+                href={`/${locale}/register`}
                 className="inline-flex items-center justify-center rounded-lg bg-primary px-8 py-4 text-base font-semibold text-white hover:bg-primary-hover transition-colors"
               >
-                Get Started Free
+                {t('getStartedFree')}
                 <svg className="ml-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -192,7 +202,7 @@ export default async function Home() {
       <footer className="mt-32 border-t border-border bg-surface">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-center text-sm text-text-secondary">
-            © 2026 Tutorio. Making tutoring better, one assignment at a time.
+            {t('footerText')}
           </p>
         </div>
       </footer>

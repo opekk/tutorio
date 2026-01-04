@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useTranslations } from "next-intl"
 import { LaTeXPreview } from "./LaTeXPreview"
 
 interface AnswerOption {
@@ -24,6 +25,7 @@ interface QuestionListProps {
 }
 
 export function QuestionList({ tutorId }: QuestionListProps) {
+  const t = useTranslations('questions')
   const [questions, setQuestions] = useState<Question[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
@@ -37,12 +39,12 @@ export function QuestionList({ tutorId }: QuestionListProps) {
     try {
       const response = await fetch(`/api/questions?tutorId=${tutorId}`)
       if (!response.ok) {
-        throw new Error("Failed to fetch questions")
+        throw new Error(t('failedToLoad'))
       }
       const data = await response.json()
       setQuestions(data.questions)
     } catch (error) {
-      setError("Failed to load questions")
+      setError(t('failedToLoad'))
       console.error(error)
     } finally {
       setIsLoading(false)
@@ -52,7 +54,7 @@ export function QuestionList({ tutorId }: QuestionListProps) {
   if (isLoading) {
     return (
       <div className="text-center py-8">
-        <p className="text-text-secondary">Loading questions...</p>
+        <p className="text-text-secondary">{t('loadingQuestions')}</p>
       </div>
     )
   }
@@ -69,7 +71,7 @@ export function QuestionList({ tutorId }: QuestionListProps) {
     return (
       <div className="text-center py-8">
         <p className="text-text-secondary">
-          No questions created yet. Use the form to create your first question.
+          {t('noQuestionsYet')}
         </p>
       </div>
     )
@@ -78,7 +80,9 @@ export function QuestionList({ tutorId }: QuestionListProps) {
   return (
     <div className="space-y-4">
       <div className="text-sm text-text-secondary">
-        {questions.length} question{questions.length !== 1 ? "s" : ""}
+        {questions.length === 1
+          ? t('questionsCountSingular', { count: questions.length })
+          : t('questionsCountPlural', { count: questions.length })}
       </div>
 
       <div className="space-y-3">
@@ -115,7 +119,7 @@ export function QuestionList({ tutorId }: QuestionListProps) {
             {expandedQuestion === question.id && (
               <div className="border-t border-border p-4 bg-surface-secondary">
                 <p className="text-xs font-medium text-text-secondary mb-3">
-                  Answer Options:
+                  {t('answerOptionsLabel')}
                 </p>
                 <div className="space-y-2">
                   {question.answerOptions.map((option, index) => (
@@ -135,7 +139,7 @@ export function QuestionList({ tutorId }: QuestionListProps) {
                       </div>
                       {option.isCorrect && (
                         <span className="text-xs font-medium text-green-600 dark:text-green-400">
-                          ✓ Correct
+                          ✓ {t('correctAnswer')}
                         </span>
                       )}
                     </div>

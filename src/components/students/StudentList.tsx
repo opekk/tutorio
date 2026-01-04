@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 
 interface Student {
   id: string
@@ -17,6 +18,8 @@ interface StudentListProps {
 
 export function StudentList({ tutorId }: StudentListProps) {
   const router = useRouter()
+  const t = useTranslations('students')
+  const tCommon = useTranslations('common')
   const [students, setStudents] = useState<Student[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
@@ -31,12 +34,12 @@ export function StudentList({ tutorId }: StudentListProps) {
     try {
       const response = await fetch(`/api/tutors/${tutorId}/students`)
       if (!response.ok) {
-        throw new Error("Failed to fetch students")
+        throw new Error(t('failedToLoad'))
       }
       const data = await response.json()
       setStudents(data.students)
     } catch (error) {
-      setError("Failed to load students")
+      setError(t('failedToLoad'))
       console.error(error)
     } finally {
       setIsLoading(false)
@@ -44,7 +47,7 @@ export function StudentList({ tutorId }: StudentListProps) {
   }
 
   async function removeStudent(studentId: string) {
-    if (!confirm("Are you sure you want to remove this student?")) {
+    if (!confirm(t('confirmRemove'))) {
       return
     }
 
@@ -55,13 +58,13 @@ export function StudentList({ tutorId }: StudentListProps) {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to remove student")
+        throw new Error(t('failedToRemove'))
       }
 
       setStudents(students.filter((s) => s.id !== studentId))
       router.refresh()
     } catch (error) {
-      alert("Failed to remove student. Please try again.")
+      alert(t('failedToRemove'))
       console.error(error)
     } finally {
       setRemovingStudentId(null)
@@ -77,7 +80,7 @@ export function StudentList({ tutorId }: StudentListProps) {
   if (isLoading) {
     return (
       <div className="text-center py-8">
-        <p className="text-text-secondary">Loading students...</p>
+        <p className="text-text-secondary">{t('loadingStudents')}</p>
       </div>
     )
   }
@@ -96,7 +99,7 @@ export function StudentList({ tutorId }: StudentListProps) {
       <div>
         <input
           type="text"
-          placeholder="Search students by name or email..."
+          placeholder={t('searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="block w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary placeholder-text-tertiary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
@@ -105,8 +108,10 @@ export function StudentList({ tutorId }: StudentListProps) {
 
       {/* Student Count */}
       <div className="text-sm text-text-secondary">
-        {filteredStudents.length} student{filteredStudents.length !== 1 ? "s" : ""}
-        {searchQuery && ` matching "${searchQuery}"`}
+        {filteredStudents.length === 1
+          ? t('studentsCountSingular', { count: filteredStudents.length })
+          : t('studentsCountPlural', { count: filteredStudents.length })}
+        {searchQuery && ` ${t('matchingQuery', { query: searchQuery })}`}
       </div>
 
       {/* Students List */}
@@ -114,8 +119,8 @@ export function StudentList({ tutorId }: StudentListProps) {
         <div className="text-center py-8">
           <p className="text-text-secondary">
             {searchQuery
-              ? "No students match your search"
-              : "No students added yet. Add a student using the form on the left."}
+              ? t('noMatchesFound')
+              : t('addStudentPrompt')}
           </p>
         </div>
       ) : (
@@ -133,7 +138,7 @@ export function StudentList({ tutorId }: StudentListProps) {
                   {student.email}
                 </p>
                 <p className="mt-1 text-xs text-text-tertiary">
-                  Added {new Date(student.createdAt).toLocaleDateString()}
+                  {t('addedOn', { date: new Date(student.createdAt).toLocaleDateString() })}
                 </p>
               </div>
               <button
@@ -141,7 +146,7 @@ export function StudentList({ tutorId }: StudentListProps) {
                 disabled={removingStudentId === student.id}
                 className="rounded-md px-3 py-1 text-sm font-medium text-error hover:bg-error-bg disabled:opacity-50 transition-colors"
               >
-                {removingStudentId === student.id ? "Removing..." : "Remove"}
+                {removingStudentId === student.id ? t('removing') : t('removeStudent')}
               </button>
             </div>
           ))}

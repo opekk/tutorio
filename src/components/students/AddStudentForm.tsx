@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 
 interface AddStudentFormProps {
   tutorId: string
@@ -10,6 +11,8 @@ interface AddStudentFormProps {
 
 export function AddStudentForm({ tutorId, onStudentAdded }: AddStudentFormProps) {
   const router = useRouter()
+  const t = useTranslations('students')
+  const tErrors = useTranslations('errors')
   const [studentEmail, setStudentEmail] = useState("")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
@@ -37,17 +40,17 @@ export function AddStudentForm({ tutorId, onStudentAdded }: AddStudentFormProps)
           setNeedsInvitation(true)
           setError(data.message)
         } else {
-          setError(data.error || "Failed to add student")
+          setError(data.error || tErrors('somethingWentWrong'))
         }
         return
       }
 
-      setSuccess(`Successfully added ${data.student.name}!`)
+      setSuccess(t('studentAddedSuccess', { name: data.student.name }))
       setStudentEmail("")
       router.refresh() // Refresh the student list
       onStudentAdded?.() // Trigger refresh in parent component
     } catch (error) {
-      setError("An error occurred. Please try again.")
+      setError(tErrors('networkError'))
     } finally {
       setIsLoading(false)
     }
@@ -60,7 +63,7 @@ export function AddStudentForm({ tutorId, onStudentAdded }: AddStudentFormProps)
           htmlFor="studentEmail"
           className="block text-sm font-medium text-text-primary"
         >
-          Student Email
+          {t('studentEmail')}
         </label>
         <input
           id="studentEmail"
@@ -86,7 +89,7 @@ export function AddStudentForm({ tutorId, onStudentAdded }: AddStudentFormProps)
                 alert("Invitation feature coming in Step 3!")
               }}
             >
-              Send invitation email
+              {t('sendInvitation')}
             </button>
           )}
         </div>
@@ -103,7 +106,7 @@ export function AddStudentForm({ tutorId, onStudentAdded }: AddStudentFormProps)
         disabled={isLoading}
         className="flex w-full justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {isLoading ? "Adding..." : "Add Student"}
+        {isLoading ? t('adding') : t('addStudentButton')}
       </button>
     </form>
   )

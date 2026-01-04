@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { LaTeXPreview } from "./LaTeXPreview"
 
 interface Subject {
@@ -28,6 +29,8 @@ interface QuestionFormProps {
 
 export function QuestionForm({ tutorId }: QuestionFormProps) {
   const router = useRouter()
+  const t = useTranslations('questions')
+  const tValidation = useTranslations('questions.validationErrors')
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedSubject, setSelectedSubject] = useState("")
@@ -85,7 +88,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
 
   function removeAnswerOption(index: number) {
     if (answerOptions.length <= 2) {
-      setError("You need at least 2 answer options")
+      setError(t('minTwoOptionsError'))
       return
     }
     setAnswerOptions(answerOptions.filter((_, i) => i !== index))
@@ -111,24 +114,24 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
 
     // Validation
     if (!selectedSubject || !selectedCategory) {
-      setError("Please select a subject and category")
+      setError(tValidation('selectSubjectAndCategory'))
       return
     }
 
     if (!questionText.trim()) {
-      setError("Please enter a question")
+      setError(tValidation('enterQuestion'))
       return
     }
 
     const filledOptions = answerOptions.filter((opt) => opt.text.trim())
     if (filledOptions.length < 2) {
-      setError("Please provide at least 2 answer options")
+      setError(tValidation('minTwoAnswers'))
       return
     }
 
     const correctAnswers = filledOptions.filter((opt) => opt.isCorrect)
     if (correctAnswers.length === 0) {
-      setError("Please mark one answer as correct")
+      setError(tValidation('markOneCorrect'))
       return
     }
 
@@ -154,11 +157,11 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
       const data = await response.json()
 
       if (!response.ok) {
-        setError(data.error || "Failed to create question")
+        setError(data.error || t('failedToCreate'))
         return
       }
 
-      setSuccess("Question created successfully!")
+      setSuccess(t('questionCreatedSuccess'))
       // Reset form
       setQuestionText("")
       setAnswerOptions([
@@ -168,7 +171,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
       setSelectedCategory("")
       router.refresh()
     } catch (error) {
-      setError("An error occurred. Please try again.")
+      setError(t('errorOccurred'))
     } finally {
       setIsLoading(false)
     }
@@ -179,7 +182,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
       {/* Subject Selection */}
       <div>
         <label className="block text-sm font-medium text-text-primary">
-          Subject
+          {t('subject')}
         </label>
         <select
           value={selectedSubject}
@@ -187,7 +190,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
           className="mt-1 block w-full rounded-md border border-border bg-surface px-3 py-2 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
           required
         >
-          <option value="">Select a subject...</option>
+          <option value="">{t('selectSubject')}</option>
           {subjects.map((subject) => (
             <option key={subject.id} value={subject.id}>
               {subject.name}
@@ -199,7 +202,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
       {/* Category Selection */}
       <div>
         <label className="block text-sm font-medium text-text-primary">
-          Category
+          {t('category')}
         </label>
         <select
           value={selectedCategory}
@@ -208,7 +211,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
           className="mt-1 block w-full rounded-md border border-border bg-surface px-3 py-2 text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50 transition-colors"
           required
         >
-          <option value="">Select a category...</option>
+          <option value="">{t('selectCategory')}</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
@@ -221,27 +224,27 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
       <div>
         <div className="flex items-center justify-between mb-1">
           <label className="block text-sm font-medium text-text-primary">
-            Question Text
+            {t('questionText')}
           </label>
           <button
             type="button"
             onClick={() => setShowPreview(!showPreview)}
             className="text-xs text-text-secondary hover:text-text-primary transition-colors"
           >
-            {showPreview ? "Hide" : "Show"} Preview
+            {showPreview ? t('hide') : t('show')} {t('preview')}
           </button>
         </div>
         <textarea
           value={questionText}
           onChange={(e) => setQuestionText(e.target.value)}
           rows={4}
-          placeholder="Enter question text. Use $ for inline math, $$ for display math. Example: Calculate $\sqrt{16}$"
+          placeholder={t('questionPlaceholder')}
           className="block w-full rounded-md border border-border bg-surface px-3 py-2 text-text-primary placeholder-text-tertiary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
           required
         />
         {showPreview && questionText && (
           <div className="mt-2 rounded-md border border-border bg-surface-secondary p-3">
-            <p className="mb-2 text-xs font-medium text-text-secondary">Preview:</p>
+            <p className="mb-2 text-xs font-medium text-text-secondary">{t('preview')}:</p>
             <LaTeXPreview
               text={questionText}
               subjectName={subjects.find(s => s.id === selectedSubject)?.name}
@@ -253,7 +256,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
       {/* Answer Options */}
       <div>
         <label className="block text-sm font-medium text-text-primary mb-2">
-          Answer Options
+          {t('answerOptions')}
         </label>
         <div className="space-y-3">
           {answerOptions.map((option, index) => (
@@ -263,13 +266,13 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
                 checked={option.isCorrect}
                 onChange={() => updateAnswerOption(index, "isCorrect", true)}
                 className="mt-2 h-4 w-4"
-                title="Mark as correct answer"
+                title={t('markAsCorrect')}
               />
               <input
                 type="text"
                 value={option.text}
                 onChange={(e) => updateAnswerOption(index, "text", e.target.value)}
-                placeholder={`Option ${index + 1} (supports LaTeX: $x^2$)`}
+                placeholder={t('optionNumber', { number: index + 1 })}
                 className="flex-1 rounded-md border border-border bg-surface px-3 py-2 text-sm text-text-primary placeholder-text-tertiary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
               />
               {answerOptions.length > 2 && (
@@ -278,7 +281,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
                   onClick={() => removeAnswerOption(index)}
                   className="rounded-md px-3 py-2 text-sm font-medium text-error hover:bg-error-bg transition-colors"
                 >
-                  Remove
+                  {t('removeOption')}
                 </button>
               )}
             </div>
@@ -289,7 +292,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
           onClick={addAnswerOption}
           className="mt-3 text-sm font-medium text-text-secondary hover:text-text-primary transition-colors"
         >
-          + Add Answer Option
+          + {t('addOption')}
         </button>
       </div>
 
@@ -310,7 +313,7 @@ export function QuestionForm({ tutorId }: QuestionFormProps) {
         disabled={isLoading}
         className="flex w-full justify-center rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
-        {isLoading ? "Creating..." : "Create Question"}
+        {isLoading ? t('creating') : t('createQuestionButton')}
       </button>
     </form>
   )
