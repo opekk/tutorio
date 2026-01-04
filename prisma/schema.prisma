@@ -20,13 +20,18 @@ enum Role {
 
 // Minimal User model - authentication only
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String   // Hashed with bcrypt
-  role      Role
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  name               String
+  password           String    // Hashed with bcrypt
+  role               Role
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Profile tracking fields for rate limiting and statistics
+  lastEmailChange    DateTime?
+  lastPasswordChange DateTime?
+  lastLoginAt        DateTime?
 
   // One-to-one profiles based on role
   tutorProfile   TutorProfile?
