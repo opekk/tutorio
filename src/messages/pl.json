@@ -116,7 +116,6 @@
     "addStudentButton": "Dodaj ucznia",
     "adding": "Dodawanie...",
     "studentAddedSuccess": "Uczeń {name} dodany pomyślnie!",
-    "studentNotRegistered": "Ten uczeń nie jest jeszcze zarejestrowany. Wysłać mu zaproszenie?",
     "sendInvitation": "Wyślij zaproszenie",
     "myStudents": "Moi uczniowie",
     "loadingStudents": "Ładowanie uczniów...",
@@ -150,7 +149,6 @@
     "selectCategory": "Wybierz kategorię...",
     "questionText": "Treść pytania",
     "enterQuestion": "Wpisz swoje pytanie tutaj...",
-    "questionPlaceholder": "Wpisz treść pytania. Użyj $ dla matematyki w linii, $$ dla wzorów wyświetlanych. Przykład: Oblicz $\\sqrt{16}$",
     "supportsLatex": "Obsługuje formatowanie LaTeX",
     "showPreview": "Pokaż podgląd",
     "hidePreview": "Ukryj podgląd",
@@ -240,6 +238,21 @@
     "serverError": "Błąd serwera",
     "latexRenderError": "Błąd renderowania LaTeX: {message}",
     "unknownError": "Nieznany błąd"
+  },
+  "navigation": {
+    "dashboard": "Panel",
+    "students": "Uczniowie",
+    "questions": "Pytania",
+    "assignments": "Zadania",
+    "myAssignments": "Moje zadania",
+    "myProgress": "Moje postępy",
+    "myTutors": "Moi korepetytorzy",
+    "profile": "Profil",
+    "settings": "Ustawienia",
+    "collapse": "Zwiń panel boczny",
+    "expand": "Rozwiń panel boczny",
+    "menu": "Menu",
+    "closeMenu": "Zamknij menu"
   },
   "home": {
     "signIn": "Zaloguj się",

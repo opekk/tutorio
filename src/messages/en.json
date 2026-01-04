@@ -150,7 +150,7 @@
     "selectCategory": "Select a category...",
     "questionText": "Question Text",
     "enterQuestion": "Enter your question here...",
-    "questionPlaceholder": "Enter question text. Use $ for inline math, $$ for display math. Example: Calculate $\\sqrt'{'16'}'$",
+    "questionPlaceholder": "Enter question text. Use $ for inline math, $$ for display math. Example: Calculate $\\sqrt{'16'}$",
     "supportsLatex": "Supports LaTeX formatting",
     "showPreview": "Show Preview",
     "hidePreview": "Hide Preview",
@@ -239,6 +239,21 @@
     "serverError": "Server error",
     "latexRenderError": "Error rendering LaTeX: {message}",
     "unknownError": "Unknown error"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "students": "Students",
+    "questions": "Questions",
+    "assignments": "Assignments",
+    "myAssignments": "My Assignments",
+    "myProgress": "My Progress",
+    "myTutors": "My Tutors",
+    "profile": "Profile",
+    "settings": "Settings",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "menu": "Menu",
+    "closeMenu": "Close menu"
   },
   "home": {
     "signIn": "Sign in",
