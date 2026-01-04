@@ -1,9 +1,19 @@
 import { requireRole } from "@/lib/auth"
 import { StudentAssignmentList } from "@/components/students/StudentAssignmentList"
 import Link from "next/link"
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
-export default async function StudentAssignmentsPage() {
+export default async function StudentAssignmentsPage({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   const user = await requireRole("STUDENT")
+  const t = await getTranslations({ locale, namespace: 'assignments' })
+  const tCommon = await getTranslations({ locale, namespace: 'common' })
 
   return (
     <div className="min-h-screen bg-background">
@@ -11,17 +21,17 @@ export default async function StudentAssignmentsPage() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Link
-              href="/dashboard"
+              href={`/${locale}/dashboard`}
               className="text-text-secondary hover:text-primary transition-colors"
             >
-              ← Back to Dashboard
+              ← {t('backToDashboard')}
             </Link>
           </div>
           <h1 className="text-3xl font-bold text-text-primary">
-            My Assignments
+            {t('myAssignments')}
           </h1>
           <p className="mt-2 text-text-secondary">
-            Complete your practice questions and track your progress
+            {t('completeYourQuestions')}
           </p>
         </div>
 

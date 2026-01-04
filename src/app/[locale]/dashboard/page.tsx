@@ -1,17 +1,27 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import { SignOutButton } from "@/components/auth/SignOutButton"
+import { UserMenu } from "@/components/auth/UserMenu"
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   const session = await auth()
 
   if (!session) {
-    redirect("/login")
+    redirect(`/${locale}/login`)
   }
 
   const isTutor = session.user.role === "TUTOR"
   const isStudent = session.user.role === "STUDENT"
+  const t = await getTranslations({ locale, namespace: 'dashboard' })
+  const tAuth = await getTranslations({ locale, namespace: 'auth' })
 
   return (
     <div className="min-h-screen bg-background">
@@ -20,18 +30,17 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-text-primary">
-                Dashboard
+                {t('title')}
               </h1>
               <p className="text-sm text-text-secondary">
-                {isTutor ? "Tutor" : "Student"} Account
+                {isTutor ? t('tutorAccount') : t('studentAccount')}
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-text-secondary">
-                {session.user.email}
-              </span>
-              <SignOutButton />
-            </div>
+            <UserMenu
+              name={session.user.name}
+              email={session.user.email}
+              role={session.user.role}
+            />
           </div>
         </div>
       </header>
@@ -39,49 +48,49 @@ export default async function DashboardPage() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="rounded-lg bg-surface p-6 shadow">
           <h2 className="text-xl font-semibold text-text-primary">
-            Welcome, {session.user.name}!
+            {t('welcome', { name: session.user.name })}
           </h2>
           <p className="mt-2 text-text-secondary">
-            You are signed in as a {isTutor ? "tutor" : "student"}.
+            {t('signedInAs', { role: isTutor ? tAuth('tutor').toLowerCase() : tAuth('student').toLowerCase() })}
           </p>
 
           {isTutor && (
             <div className="mt-6 space-y-4">
               <h3 className="text-lg font-medium text-text-primary">
-                Quick Actions
+                {t('quickActions')}
               </h3>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <Link
-                  href="/dashboard/students"
+                  href={`/${locale}/dashboard/students`}
                   className="card-interactive rounded-lg border border-border p-4 hover:bg-surface-secondary transition-colors"
                 >
                   <h4 className="font-medium text-text-primary">
-                    👥 Students
+                    👥 {t('students')}
                   </h4>
                   <p className="mt-1 text-sm text-text-secondary">
-                    Manage your students
+                    {t('manageStudents')}
                   </p>
                 </Link>
                 <Link
-                  href="/dashboard/questions"
+                  href={`/${locale}/dashboard/questions`}
                   className="card-interactive rounded-lg border border-border p-4 hover:bg-surface-secondary transition-colors"
                 >
                   <h4 className="font-medium text-text-primary">
-                    📝 Questions
+                    📝 {t('questions')}
                   </h4>
                   <p className="mt-1 text-sm text-text-secondary">
-                    Create practice questions
+                    {t('createQuestions')}
                   </p>
                 </Link>
                 <Link
-                  href="/dashboard/assignments"
+                  href={`/${locale}/dashboard/assignments`}
                   className="card-interactive rounded-lg border border-border p-4 hover:bg-surface-secondary transition-colors"
                 >
                   <h4 className="font-medium text-text-primary">
-                    📋 Assignments
+                    📋 {t('assignments')}
                   </h4>
                   <p className="mt-1 text-sm text-text-secondary">
-                    Assign questions to students
+                    {t('assignQuestions')}
                   </p>
                 </Link>
               </div>
@@ -91,26 +100,26 @@ export default async function DashboardPage() {
           {isStudent && (
             <div className="mt-6 space-y-4">
               <h3 className="text-lg font-medium text-text-primary">
-                Quick Actions
+                {t('quickActions')}
               </h3>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Link
-                  href="/dashboard/student/assignments"
+                  href={`/${locale}/dashboard/student/assignments`}
                   className="card-interactive rounded-lg border border-border p-4 hover:bg-surface-secondary transition-colors"
                 >
                   <h4 className="font-medium text-text-primary">
-                    📋 My Assignments
+                    📋 {t('myAssignments')}
                   </h4>
                   <p className="mt-1 text-sm text-text-secondary">
-                    View and complete practice questions
+                    {t('viewAssignments')}
                   </p>
                 </Link>
                 <div className="rounded-lg border border-border p-4 opacity-50">
                   <h4 className="font-medium text-text-primary">
-                    👥 My Tutors
+                    👥 {t('myTutors')}
                   </h4>
                   <p className="mt-1 text-sm text-text-secondary">
-                    Coming soon
+                    {t('comingSoon')}
                   </p>
                 </div>
               </div>
